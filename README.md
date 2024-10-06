@@ -1,11 +1,13 @@
 # SLURM emission
 
-For those of you who use heavily High Performance Computing (HPC) clusters that use SLURM, you might have noticed that submitting jobs 
-to the cluster can be a bit of a hassle. This is especially True when you have to submit multiple jobs with similar 
-scripts but different parameters. This is where the `slurm_emission` comes in.
+For those of you who use heavily High Performance Computing (HPC) clusters that use SLURM, 
+you might have noticed that submitting jobs to the cluster can be a bit of a hassle. 
+This is especially true when you have to submit multiple jobs with similar 
+scripts but different parameters. Fortunately, `slurm_emission` comes for the rescue. In fact,
 
 - automates the creation of the sh file
-- simplifies the submission of jobs to the cluster when the scripts to reuse are similar, and only the parameters change
+- simplifies the submission of jobs to the cluster when the scripts to reuse are similar, 
+and only the parameters change
 
 I use it constantly so I thought it might be useful for you as well.
 
@@ -18,7 +20,7 @@ sh file.
 
 ```python
 import os
-from slurm_emission.submit_jobs import run_experiments
+from slurm_emission import run_experiments
 
 CDIR = os.path.dirname(os.path.abspath(__file__))
 SHDIR = os.path.join(CDIR, 'sh')
@@ -71,7 +73,7 @@ run_experiments(
     bash_prelines=bash_prelines,
     sh_save_dir=SHDIR,
     id=id,
-    duration={'days': 0, 'hours': 23, 'minutes': 00, 'prestop_training_hours': -1},
+    duration={'days': 0, 'hours': 23, 'minutes': 00},
     account=account,
     n_gpus=n_gpus,
     mem=mem,
@@ -81,7 +83,7 @@ run_experiments(
 ```
 
 
-The output of this script will be a sh file that will contain all the jobs, and if `mock_send=False`, the following jobs will be submitted:
+The output of this script will be a sh file that will be used by all the jobs, and if `mock_send=False`, the following jobs will be submitted:
 
 ```commandline
 Number jobs: 16/16

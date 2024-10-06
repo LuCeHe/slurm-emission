@@ -6,7 +6,7 @@ import numpy as np
 def run_experiments(
         experiments=None, subset=[0, None], init_command='python language_main.py ',
         run_string=None, is_argparse=True, sh_save_dir='', account='',
-        duration={'days': 0, 'hours': 12, 'minutes': 0, 'prestop_training_hours': -1},
+        duration={'days': 0, 'hours': 12, 'minutes': 0},
         n_gpus=0, id='', mem='8G', cpus_per_task=2, mock_send=False,
         bash_prelines='',
         shs_config_lines=None,

@@ -37,7 +37,7 @@ run_experiments(
     bash_prelines=bash_prelines,
     sh_save_dir=SHDIR,
     id=id,
-    duration={'days': 0, 'hours': 23, 'minutes': 00, 'prestop_training_hours': -1},
+    duration={'days': 0, 'hours': 23, 'minutes': 00},
     account=account,
     n_gpus=n_gpus,
     mem=mem,
