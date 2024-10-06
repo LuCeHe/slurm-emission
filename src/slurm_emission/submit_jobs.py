@@ -9,7 +9,7 @@ def run_experiments(
         duration={'days': 0, 'hours': 12, 'minutes': 0, 'prestop_training_hours': -1},
         n_gpus=0, id='', mem='8G', cpus_per_task=2, mock_send=False,
         bash_prelines='',
-        hashsbatch_prelines=None,
+        shs_config_lines=None,
 ):
     """
     :param experiments: list of dictionaries, each dictionary contains the hyperparameters to be tested
@@ -26,13 +26,10 @@ def run_experiments(
     :param cpus_per_task: the number of cpus per task
     :param mock_send: if you want to print the commands instead of running them
     :param bash_prelines: the bash lines to be run before the experiment
-    :param hashsbatch_prelines: the sbatch lines to be run before the experiment, if you want to parameters that are not
+    :param shs_config_lines: the sbatch lines to be run before the experiment, if you want to parameters that are not
     in our default configuration
     """
     delta = timedelta(days=duration['days'], hours=duration['hours'], minutes=duration['minutes'])
-
-    # stop training 2 hours before the total allocated time, to run tests
-    stop_training = int(delta.total_seconds() - duration['prestop_training_hours'] * 3600)
 
     hours, remainder = divmod(delta.total_seconds(), 3600)
     minutes, seconds = divmod(remainder, 60)
@@ -41,12 +38,8 @@ def run_experiments(
     if run_string is None:
         sh_name = create_sbatch_sh(sh_duration, sh_save_dir, account, n_gpus, id, mem=mem,
                                    cpus_per_task=cpus_per_task, bash_prelines=bash_prelines,
-                                   hashsbatch_prelines=hashsbatch_prelines)
+                                   shs_config_lines=shs_config_lines)
         run_string = 'sbatch ' + sh_name
-
-    stop_training = '' if duration['prestop_training_hours'] < 0 else ' stop_time={} '.format(int(stop_training))
-    if is_argparse:
-        stop_training = stop_training.replace('stop_time', '--stop_time')
 
     if not experiments is None:
         ds = dict2iter(experiments)
@@ -121,7 +114,7 @@ def dict2iter(experiments, to_list=False):
 
 def create_sbatch_sh(
         duration, sh_location, account, n_gpus, id, mem='32G', cpus_per_task=4,
-        bash_prelines='', hashsbatch_prelines=None):
+        bash_prelines='', shs_config_lines=None):
     now = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     rand_5 = ''.join(random.choices(string.ascii_letters + string.digits, k=5))
 
@@ -130,7 +123,7 @@ def create_sbatch_sh(
     with open(sh_path, 'w') as f:
         sh_string = sh_base(
             duration, account, n_gpus, mem, cpus_per_task=cpus_per_task,
-            bash_prelines=bash_prelines, hashsbatch_prelines=hashsbatch_prelines
+            bash_prelines=bash_prelines, shs_config_lines=shs_config_lines
         )
         f.write(sh_string)
     return sh_path
@@ -139,17 +132,15 @@ def create_sbatch_sh(
 def sh_base(
         time, account, n_gpus, mem='32G', cpus_per_task=4,
         bash_prelines='module load gcc/9.3.0 arrow cuda/11.1 python/3.9 scipy-stack StdEnv/2020',
-        hashsbatch_prelines=None
+        shs_config_lines=None
 ):
     gpus_line = '' if n_gpus == 0 else f'#SBATCH --gres=gpu:{n_gpus}'
-    if hashsbatch_prelines is None:
-
-
-        hashsbatch_prelines = f"""
+    if shs_config_lines is None:
+        shs_config_lines = f"""
 #SBATCH --time={time}
 #SBATCH --account={account}
 #SBATCH --mem {mem}
 #SBATCH --cpus-per-task {cpus_per_task}
 {gpus_line}
 """
-    return f"#!/bin/bash{hashsbatch_prelines}\n{bash_prelines}\n$1"
+    return f"#!/bin/bash{shs_config_lines}\n{bash_prelines}\n$1"

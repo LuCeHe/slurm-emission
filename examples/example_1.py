@@ -1,21 +1,6 @@
-n_gpus = 1
-time = '00:59:00'
-account = 'def-lherrtti'
-mem = '40G'
-
-hashsbatch_prelines = f"""
-#SBATCH -N 1
-#SBATCH -C gpu
-#SBATCH -G {n_gpus}
-#SBATCH -q shared
-#SBATCH --time={time}
-#SBATCH --account={account}
-#SBATCH --mem {mem}
-"""
-
 import os
 
-from slurm_sender.submit_jobs import run_experiments
+from slurm_emission.submit_jobs import run_experiments
 
 CDIR = os.path.dirname(os.path.abspath(__file__))
 SHDIR = os.path.join(CDIR, 'sh')
@@ -23,6 +8,12 @@ os.makedirs(SHDIR, exist_ok=True)
 
 script_path = 'path/to/your/script'
 script_name = 'script.py'
+n_gpus = 1
+mem = '40G'
+cpus_per_task = 4
+
+id = 'transformers'
+account = 'def-lherrtti'
 
 experiments = []
 
@@ -40,14 +31,16 @@ load_modules = 'module unload cudatookit; module load conda'
 py_location = f'cd {script_path}'
 bash_prelines = f'{load_modules}\n{env_location}\n{py_location}'
 
-id = 'transformers'
-
 run_experiments(
     experiments,
     init_command=f'python {script_name} ',
     bash_prelines=bash_prelines,
     sh_save_dir=SHDIR,
     id=id,
-    hashsbatch_prelines=hashsbatch_prelines,
+    duration={'days': 0, 'hours': 23, 'minutes': 00, 'prestop_training_hours': -1},
+    account=account,
+    n_gpus=n_gpus,
+    mem=mem,
+    cpus_per_task=cpus_per_task,
     mock_send=True,
 )
