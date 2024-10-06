@@ -1,6 +1,6 @@
 import os
 
-from slurm_emission.submit_jobs import run_experiments
+from slurm_emission import run_experiments
 
 CDIR = os.path.dirname(os.path.abspath(__file__))
 SHDIR = os.path.join(CDIR, 'sh')
