@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slurm_emission"
+version = "0.0.1"
+description = "Submit jobs to SLURM seamlessly"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    { name = "Luca Herrtti", email = "luca.herrtti@gmail.com" }
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
+keywords = ["slurm", "jobs", "emission", "hpc"]
+dependencies = [
+    # This will be read from `requirements.txt` in the dynamic setup process
+]
+
+[project.urls]
+"Homepage" = "https://github.com/lucehe/slurm-emission"
+"Bug Tracker" = "https://github.com/lucehe/slurm-emission/issues"
+
+[tool.setuptools]
+packages = { find = { where = ["src"], exclude = ["tests"] } }
+
+[tool.setuptools.package-dir]
+"" = "src"
