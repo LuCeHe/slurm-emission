@@ -47,6 +47,8 @@ sbatch_args = {
     'time': '23:00:00',
 }
 
+id = 'llms'
+
 experiments = []
 
 datasets = ['cifar', 'mnist']
@@ -104,22 +106,22 @@ that will be used by all the jobs that will be submitted:
 
 ```commandline
 Number jobs: 16/16
-1/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=lstm --dataset=cifar '
-2/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=lstm --dataset=cifar '
-3/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=transformer --dataset=mnist '
-4/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=transformer --dataset=mnist '
-5/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=transformer --dataset=mnist '
-6/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=lstm --dataset=cifar '
-7/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=lstm --dataset=mnist '
-8/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=lstm --dataset=mnist '
-9/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=transformer --dataset=mnist '
-10/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=lstm --dataset=mnist '
-11/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=transformer --dataset=cifar '
-12/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=transformer --dataset=cifar '
-13/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=transformer --dataset=cifar '
-14/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=lstm --dataset=cifar '
-15/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=lstm --dataset=mnist '
-16/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=transformer --dataset=cifar '
+1/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=lstm --dataset=cifar '
+2/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=lstm --dataset=cifar '
+3/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=transformer --dataset=mnist '
+4/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=transformer --dataset=mnist '
+5/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=transformer --dataset=mnist '
+6/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=lstm --dataset=cifar '
+7/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=lstm --dataset=mnist '
+8/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=lstm --dataset=mnist '
+9/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=transformer --dataset=mnist '
+10/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=lstm --dataset=mnist '
+11/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=2 --epochs=300 --model=transformer --dataset=cifar '
+12/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=transformer --dataset=cifar '
+13/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=0 --epochs=300 --model=transformer --dataset=cifar '
+14/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=1 --epochs=300 --model=lstm --dataset=cifar '
+15/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=lstm --dataset=mnist '
+16/16 sbatch cdir\sh\llms--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=transformer --dataset=cifar '
 Number jobs: 16/16
 ```
 
