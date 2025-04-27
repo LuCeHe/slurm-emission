@@ -1,6 +1,4 @@
 import os, itertools, time, socket, random
-import numpy as np
-from CCsubmit.helpers import get_subset
 
 
 def run_experiments(
@@ -8,10 +6,8 @@ def run_experiments(
         run_string=None, is_argparse=True, sh_location='', bash_prelines='', id='', mock_send=False,
         randomize_seed=0, prevent=[], sbatch_args={}, remove_duplicates=True
 ):
-
     if isinstance(randomize_seed, int):
         random.seed(randomize_seed)
-        np.random.seed(randomize_seed)
 
     if run_string is None:
         sh_name = create_sbatch_sh(
@@ -64,16 +60,17 @@ def run_experiments(
     if subset is None:
         subset = [0, None]
 
-    elif subset == True:
-        subset, _ = get_subset(ds)
-
     elif 'DESKTOP' in socket.gethostname():
         subset = [0, None]
 
     elif isinstance(subset, dict):
         servers = [k for k, v in subset.items()]
         probs = [v for k, v in subset.items()]
-        cumprobs = np.cumsum(probs)
+        # manual cumsum instead of loading numpy
+        cumprobs = [
+            float(sum(probs[:i + 1])) if sum(probs) > 0 else 0
+            for i, p in enumerate(probs)
+        ]
 
         current_server = socket.gethostname()
 

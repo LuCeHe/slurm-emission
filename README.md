@@ -1,12 +1,12 @@
 # SLURM emission
 
-For those of you who use heavily High Performance Computing (HPC) clusters that use SLURM, 
+For those of you who use heavily High Performance Computing (HPC) clusters that depend on SLURM, 
 you might have noticed that submitting jobs to the cluster can be a bit of a hassle. 
 This is especially true when you have to submit multiple jobs with similar 
 scripts but different parameters. Fortunately, `slurm_emission` comes for the rescue. In fact,
 
-- automates the creation of the sh file
-- simplifies the submission of jobs to the cluster when the scripts to reuse are similar, 
+- it automates the creation of the sh file
+- and it simplifies the submission of jobs to the cluster when the scripts to reuse are similar, 
 and only the parameters change
 
 I use it constantly so I thought it might be useful for you as well.
@@ -36,12 +36,16 @@ We define also the script location and the name of the script to run.
 
 script_path = 'path/to/your/script'
 script_name = 'script.py'
-n_gpus = 1
-mem = '40G'
-cpus_per_task = 4
 
-id = 'transformers'
-account = 'def-lherrtti'
+sbatch_args = {
+    'job-name': 'example_1',
+    'partition': 'gpu',
+    'gres': 'gpu:1',
+    'cpus-per-task': 4,
+    'mem': '40G',
+    'account': '1230e98kal',
+    'time': '23:00:00',
+}
 
 experiments = []
 
@@ -49,7 +53,7 @@ datasets = ['cifar', 'mnist']
 models = ['transformer', 'lstm']
 
 experiment = {
-    'seed': [s + 0 for s in range(4)],
+    'seed': list(range(4)),
     'epochs': [300], 'model': models, 'dataset': datasets
 }
 experiments.append(experiment)
@@ -62,7 +66,7 @@ then we submit the jobs.
 
 ```python
 
-env_location = f'conda activate ssms'
+env_location = f'conda activate llms'
 load_modules = 'module unload cudatookit; module load conda'
 py_location = f'cd {script_path}'
 bash_prelines = f'{load_modules}\n{env_location}\n{py_location}'
@@ -70,20 +74,33 @@ bash_prelines = f'{load_modules}\n{env_location}\n{py_location}'
 run_experiments(
     experiments,
     init_command=f'python {script_name} ',
+    sbatch_args=sbatch_args,
     bash_prelines=bash_prelines,
-    sh_save_dir=SHDIR,
+    sh_location=SHDIR,
     id=id,
-    duration={'days': 0, 'hours': 23, 'minutes': 00},
-    account=account,
-    n_gpus=n_gpus,
-    mem=mem,
-    cpus_per_task=cpus_per_task,
-    mock_send=True,
 )
 ```
 
 
-The output of this script will be a sh file that will be used by all the jobs, and if `mock_send=False`, the following jobs will be submitted:
+The output of this script will be a .sh file with the following inside
+
+```commandline
+#!/bin/bash
+#SBATCH --job-name=example_1
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=40G
+#SBATCH --account=1230e98kal
+#SBATCH --time=23:00:00
+
+module unload cudatookit; module load conda
+conda activate llms
+cd path/to/your/script
+$1
+```
+
+that will be used by all the jobs that will be submitted:
 
 ```commandline
 Number jobs: 16/16
@@ -105,9 +122,5 @@ Number jobs: 16/16
 16/16 sbatch cdir\sh\transformers--2024-06-07_11-49-47OukHy.sh 'python script.py --seed=3 --epochs=300 --model=transformer --dataset=cifar '
 Number jobs: 16/16
 ```
-
-In case you need to use a more complex sh file, you can use the `hashsbatch_prelines` argument of the `run_experiments` function
-as shown in `example_2`.
-
 
 Hope it helps!
