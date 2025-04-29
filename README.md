@@ -74,9 +74,9 @@ then we submit the jobs.
 
 ```python
 load_modules = 'module unload cudatookit; module load conda'
-env_location = f'conda activate llms'
+activate_env = f'conda activate llms'
 py_location = f'cd {script_path}'
-bash_prelines = f'{load_modules}\n{env_location}\n{py_location}'
+bash_prelines = f'{load_modules}\n{activate_env}\n{py_location}'
 
 run_experiments(
     experiments,
