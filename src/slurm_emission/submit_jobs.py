@@ -152,3 +152,6 @@ def sh_base(
 ):
     sbatch_args_line = ''.join([f'#SBATCH --{k}={v}\n' for k, v in sbatch_args.items()])
     return f"#!/bin/bash\n{sbatch_args_line}\n{bash_prelines}\n$1"
+
+def add_one(number):
+    return number + 1

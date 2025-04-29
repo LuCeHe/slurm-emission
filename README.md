@@ -9,6 +9,12 @@ scripts but different parameters. Fortunately, `slurm_emission` comes for the re
 - and it simplifies the submission of jobs to the cluster when the scripts to reuse are similar, 
 and only the parameters change
 
+You can install it with
+
+```bash
+pip install slurm-emission
+```
+
 I use it constantly so I thought it might be useful for you as well.
 
 ## Example
