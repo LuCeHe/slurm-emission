@@ -22,7 +22,7 @@ I use it constantly so I thought it might be useful for you as well.
 Here we go in detail through what you can find in the `example_1` script. Let's
 define the parameters of the jobs, the number of gpus, cpus and memory we'll need. 
 Also, we want to repeat the experiments for several settings, in this case, we have two datasets, 
-two models, and four seeds. Remember to adapt the code to be able to receive those arguments
+two models, and four seeds. Remember to adapt the `script.py` code to be able to receive those arguments
 as argparse arguments.
 We define also the script location and the name of the script to run. 
 
@@ -59,7 +59,7 @@ experiments.append(experiment)
 
 Finally, we define the bash lines that will go in the sh, 
 which are the lines that will be executed before the script, and will ask the system to load the necessary modules and activate the conda environment.
-Then we submit the jobs.
+Then we submit the jobs with `run_experiments` function, which will create the sh file and submit the jobs to the cluster.
 
 
 ```python
