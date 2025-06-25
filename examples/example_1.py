@@ -1,10 +1,4 @@
-import os
-
 from slurm_emission import run_experiments
-
-CDIR = os.path.dirname(os.path.abspath(__file__))
-SHDIR = os.path.join(CDIR, 'sh')
-os.makedirs(SHDIR, exist_ok=True)
 
 script_path = 'path/to/your/script'
 script_name = 'script.py'
@@ -32,8 +26,8 @@ experiment = {
 }
 experiments.append(experiment)
 
+load_modules = 'module load conda'
 env_location = f'conda activate llms'
-load_modules = 'module unload cudatookit; module load conda'
 py_location = f'cd {script_path}'
 bash_prelines = f'{load_modules}\n{env_location}\n{py_location}'
 
@@ -42,6 +36,5 @@ run_experiments(
     init_command=f'python {script_name} ',
     sbatch_args=sbatch_args,
     bash_prelines=bash_prelines,
-    sh_location=SHDIR,
     id=id,
 )

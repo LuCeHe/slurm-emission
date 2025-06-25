@@ -1,6 +1,6 @@
 # SLURM emission
 
-For those of you who use heavily High Performance Computing (HPC) clusters that depend on SLURM, 
+For those of you who make heavy use of High Performance Computing (HPC) clusters that depend on SLURM, 
 you might have noticed that submitting jobs to the cluster can be a bit of a hassle. 
 This is especially true when you have to submit multiple jobs with similar 
 scripts but different parameters. Fortunately, `slurm_emission` comes for the rescue. In fact,
@@ -20,25 +20,14 @@ I use it constantly so I thought it might be useful for you as well.
 ## Example
 
 Here we go in detail through what you can find in the `example_1` script. Let's
-import first the necessary modules, and create a folder where the code will save the 
-sh file.
-
-
-```python
-import os
-from slurm_emission import run_experiments
-
-CDIR = os.path.dirname(os.path.abspath(__file__))
-SHDIR = os.path.join(CDIR, 'sh')
-os.makedirs(SHDIR, exist_ok=True)
-```
-
-Then, we define the parameters of the jobs, the number of gpus, cpus and memory we'll need. 
+define the parameters of the jobs, the number of gpus, cpus and memory we'll need. 
 Also, we want to repeat the experiments for several settings, in this case, we have two datasets, 
-two models, and four seeds.
+two models, and four seeds. Remember to adapt the code to be able to receive those arguments
+as argparse arguments.
 We define also the script location and the name of the script to run. 
 
 ```python
+from slurm_emission import run_experiments
 
 script_path = 'path/to/your/script'
 script_name = 'script.py'
@@ -68,13 +57,14 @@ experiments.append(experiment)
 ```
 
 
-Finally, we define the bash lines that will go in the sh, which are the lines that will be executed before the script, and
-then we submit the jobs.
+Finally, we define the bash lines that will go in the sh, 
+which are the lines that will be executed before the script, and will ask the system to load the necessary modules and activate the conda environment.
+Then we submit the jobs.
 
 
 ```python
-load_modules = 'module unload cudatookit; module load conda'
-activate_env = f'conda activate llms'
+load_modules = 'module load conda'
+activate_env = 'conda activate llms'
 py_location = f'cd {script_path}'
 bash_prelines = f'{load_modules}\n{activate_env}\n{py_location}'
 
@@ -83,11 +73,9 @@ run_experiments(
     init_command=f'python {script_name} ',
     sbatch_args=sbatch_args,
     bash_prelines=bash_prelines,
-    sh_location=SHDIR,
     id=id,
 )
 ```
-
 
 The output of this script will be a .sh file with the following inside
 
@@ -101,7 +89,7 @@ The output of this script will be a .sh file with the following inside
 #SBATCH --account=1230e98kal
 #SBATCH --time=23:00:00
 
-module unload cudatookit; module load conda
+module load conda
 conda activate llms
 cd path/to/your/script
 $1

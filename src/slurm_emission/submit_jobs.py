@@ -1,11 +1,25 @@
 import os, itertools, time, socket, random
 
+# home
+HOMEDIR = os.path.expanduser('~')
+SHSDIR = os.path.join(HOMEDIR, '.cache', 'slurm-emission', 'shs')
+os.makedirs(SHSDIR, exist_ok=True)
+
 
 def run_experiments(
         experiments=None, subset=None, init_command='python main.py ',
-        run_string=None, is_argparse=True, sh_location='', bash_prelines='', id='', mock_send=False,
-        randomize_seed=0, prevent=[], sbatch_args={}, remove_duplicates=True
+        run_string=None, is_argparse=True, sh_location=SHSDIR, bash_prelines='', id='', mock_send=False,
+        randomize_seed=0, prevent=[], sbatch_args={}, remove_duplicates=True, remove_old_shs=True
 ):
+    if remove_old_shs:
+        # remove old shs and keep only 10 newest
+        all_shs = [os.path.join(sh_location, f) for f in os.listdir(sh_location) if f.endswith('.sh')]
+        dates = ['--'.join(sh.split('--')[1:]).replace('.sh', '') for sh in all_shs]
+        dates = sorted(dates)[-10:]
+        for f in all_shs:
+            if not any(date in f for date in dates):
+                os.remove(os.path.join(sh_location, f))
+
     if isinstance(randomize_seed, int):
         random.seed(randomize_seed)
 
@@ -152,6 +166,7 @@ def sh_base(
 ):
     sbatch_args_line = ''.join([f'#SBATCH --{k}={v}\n' for k, v in sbatch_args.items()])
     return f"#!/bin/bash\n{sbatch_args_line}\n{bash_prelines}\n$1"
+
 
 def add_one(number):
     return number + 1
