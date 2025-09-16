@@ -1,4 +1,4 @@
-import os, itertools, time, socket, random
+import os, itertools, time, socket, random, re
 
 # home
 HOMEDIR = os.path.expanduser('~')
@@ -9,7 +9,8 @@ os.makedirs(SHSDIR, exist_ok=True)
 def run_experiments(
         experiments=None, subset=None, init_command='python main.py ',
         run_string=None, is_argparse=True, sh_location=SHSDIR, bash_prelines='', id='', mock_send=False,
-        randomize_seed=0, prevent=[], sbatch_args={}, remove_duplicates=True, remove_old_shs=True
+        randomize_seed=0, prevent=[], sbatch_args={}, remove_duplicates=True, remove_old_shs=True,
+        clean_store_true_false=True,
 ):
     if remove_old_shs:
         # remove old shs and keep only 10 newest
@@ -124,6 +125,11 @@ def run_experiments(
             command = init_command + d
             command = "{} '{}'".format(run_string, command)
             command = command.replace('  ', ' ')
+            if clean_store_true_false:
+                command = command.replace('=##true## ', ' ')
+                # if ##false## use re to remove from --xxx=##false##
+                command = re.sub(r'--\w+=##false## ', ' ', command)
+
             print('{}/{}'.format(i + 1, len(ds)), command)
             if not mock_send:
                 os.system(command)
