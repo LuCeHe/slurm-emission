@@ -1,4 +1,4 @@
-import os, itertools, time, socket, random, re
+import os, itertools, time, socket, random, re, string, secrets
 
 # home
 HOMEDIR = os.path.expanduser('~')
@@ -7,8 +7,8 @@ os.makedirs(SHSDIR, exist_ok=True)
 
 
 def run_experiments(
-        experiments=None, subset=None, init_command='python main.py ',
-        run_string=None, is_argparse=True, sh_location=SHSDIR, bash_prelines='', id='', mock_send=False,
+        experiments=None, subset=None, init_command='python main.py',
+        is_argparse=True, sh_location=SHSDIR, bash_prelines='', id='', mock_send=False,
         randomize_seed=0, prevent=[], sbatch_args={}, remove_duplicates=True, remove_old_shs=True,
         clean_store_true_false=True,
 ):
@@ -24,13 +24,12 @@ def run_experiments(
     if isinstance(randomize_seed, int):
         random.seed(randomize_seed)
 
-    if run_string is None:
-        sh_name = create_sbatch_sh(
-            sh_location=sh_location, id=id,
-            bash_prelines=bash_prelines,
-            sbatch_args=sbatch_args,
-        )
-        run_string = 'sbatch ' + sh_name
+    sh_name = create_sbatch_sh(
+        sh_location=sh_location, id=id,
+        bash_prelines=bash_prelines,
+        sbatch_args=sbatch_args,
+    )
+    run_string = 'sbatch ' + sh_name
 
     if not experiments is None and not isinstance(experiments, int):
         # flatten list of dictionaries
@@ -73,9 +72,6 @@ def run_experiments(
         ds = ['']
 
     if subset is None:
-        subset = [0, None]
-
-    elif 'DESKTOP' in socket.gethostname():
         subset = [0, None]
 
     elif isinstance(subset, dict):
@@ -122,13 +118,15 @@ def run_experiments(
     if len(ds) > 0:
         print(f'Number jobs: {len(ds)}/{len(ods)}')
         for i, d in enumerate(ds):
-            command = init_command + d
+            command = init_command + ' ' + d
             command = "{} '{}'".format(run_string, command)
-            command = command.replace('  ', ' ')
+
             if clean_store_true_false:
                 command = command.replace('=##true## ', ' ')
-                # if ##false## use re to remove from --xxx=##false##
                 command = re.sub(r'--\w+=##false## ', ' ', command)
+
+            # remove multiple spaces with re
+            command = re.sub(r'\s+', ' ', command)
 
             print('{}/{}'.format(i + 1, len(ds)), command)
             if not mock_send:
@@ -152,10 +150,12 @@ def create_sbatch_sh(
         sh_location, id,
         bash_prelines='', sbatch_args={}
 ):
-    import random
     named_tuple = time.localtime()  # get struct_time
     time_string = time.strftime("%Y-%m-%d--%H-%M-%S--", named_tuple)
-    random_string = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+    characters = string.ascii_letters + string.digits
+    # Use secrets so the suffix is unique even when randomize_seed resets random.seed(0)
+    # at the start of each run_experiments call in the same wall-clock second.
+    random_string = ''.join(secrets.choice(characters) for _ in range(5))
 
     sh_name = f'{id}--' + time_string + random_string + '.sh'
     sh_path = os.path.join(sh_location, sh_name)
